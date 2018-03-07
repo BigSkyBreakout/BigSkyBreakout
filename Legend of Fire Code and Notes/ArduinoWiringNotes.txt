@@ -1,0 +1,1 @@
+## Just a place to store notes about pins and other wire related things in arduino ##
