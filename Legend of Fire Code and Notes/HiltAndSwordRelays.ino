@@ -19,11 +19,50 @@ int sense3 = A3; //analog
 int hiltRelay = 7;
 int swordRelay = 6;
 
+// Reset button
+int resetButton = 5;
+int buttonState;
+bool needsToBeReset = false;
+
+// speaker
+int speakerPin = 2;
+bool playing = false;
+
+// MUSIC
+char notes[] = "gabygabyxzCDxzCDabywabywzCDEzCDEbywFCDEqywFGDEqi        azbC"; // a space represents a rest
+int length = sizeof(notes); // the number of notes
+int beats[] = { 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 2,3,3,16,};
+int tempo = 75;
+
+void playTone(int tone, int duration) {
+  for (long i = 0; i < duration * 1000L; i += tone * 2) {
+    digitalWrite(speakerPin, HIGH);
+    delayMicroseconds(tone);
+    digitalWrite(speakerPin, LOW);
+    delayMicroseconds(tone);
+  }
+}
+
+void playNote(char note, int duration) {
+  char names[] = { 'c', 'd', 'e', 'f', 'g', 'x', 'a', 'z', 'b', 'C', 'y', 'D', 'w', 'E', 'F', 'q', 'G', 'i' };
+  // c=C4, C = C5. These values have been tuned.
+  int tones[] = { 1898, 1690, 1500, 1420, 1265, 1194, 1126, 1063, 1001, 947, 893, 843, 795, 749, 710, 668, 630, 594 };
+   
+  // play the tone corresponding to the note name
+  for (int i = 0; i < 18; i++) {
+    if (names[i] == note) {
+      playTone(tones[i], duration);
+    }
+  }
+}
+
 void setup()
 {
+  pinMode(hiltRelay, OUTPUT);
+  pinMode(swordRelay, OUTPUT);
   // STOP RELAYS (to turn it on, use digitalWrite([name of relay], LOW);)
-  digitalWrite(hiltRelay, HIGH);
-  digitalWrite(swordRelay, HIGH);
+  digitalWrite(hiltRelay, LOW);
+  digitalWrite(swordRelay, LOW);
   // Set 0
   pinMode(detect0,OUTPUT);
   pinMode(sense0,INPUT);
@@ -54,22 +93,54 @@ void loop()
   // set3
   int valueSet3=analogRead(sense3);
 
+
+  buttonState = digitalRead(resetButton);
+  if (buttonState == HIGH) {
+    if(needsToBeReset == true){
+      needsToBeReset = false;
+      digitalWrite(hiltRelay, LOW);
+      digitalWrite(swordRelay, LOW);
+      playing = false;
+    }
+  }
   // ALL THREE LIQUIDS ABOVE 910
-  if(valueSet0>=910 and valueSet1>=910 and valueSet2>=910){
+  if(valueSet0>=945 and valueSet1>=945 and valueSet2>=945){
     Serial.println("1 and 2 and 3 (liquids done)");
-    digitalWrite(hiltRelay, LOW);
+    digitalWrite(hiltRelay, HIGH);
+    needsToBeReset = true;
+    if(playing == false){
+      playing = true;
+      music();
+    }
   }
+    
   else{
     Serial.println("Nothing");
   }
-  // SWORD
-  if(valueSet3 >=910){
+   //SWORD
+  if(valueSet3 >=945){
     Serial.println("Sword in");
-    digitalWrite(swordRelay, LOW);
+    digitalWrite(swordRelay, HIGH);
+    needsToBeReset = true;
+
   }
   else{
     Serial.println("Nothing");
   }
+}
+
+void music() {
+  pinMode(speakerPin, OUTPUT);
+  for (int i = 48; i < length; i++) {
+  if (notes[i] == ' ') {
+    delay(beats[i] * tempo); // rest
+  } else {
+    playNote(notes[i], beats[i] * tempo);
+    }
+    
+  // pause between notes
+  delay(tempo / 2); 
+  }
   
-  
+  delay(100);
 }
