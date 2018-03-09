@@ -61,7 +61,7 @@ void setup()
   // Relay configuration to output
   pinMode(hiltRelay, OUTPUT);
   pinMode(swordRelay, OUTPUT);
-  // STOP RELAYS (to turn it on, use digitalWrite([name of relay], LOW);)
+  // STOP RELAYS (to turn it on, use digitalWrite([name of relay], HIGH);)
   digitalWrite(hiltRelay, LOW);
   digitalWrite(swordRelay, LOW);
   // IR Set 0
