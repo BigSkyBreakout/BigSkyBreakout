@@ -1,31 +1,31 @@
 // Based Off Of: http://www.instructables.com/id/ARDUINO-Burglar-Alarm-Using-Infrared-Emitter-Detec/
 // Set 0 (for the flasks of opaque liquid)
-int detect0 = 8;
+int detect0 = 8; // Pin
 int sense0 = A0; //analog
 
 // Set 1 (for the flasks of opaque liquid)
-int detect1 = 9;
+int detect1 = 9; //Pin
 int sense1 = A1; //analog
 
 // Set 2 (for the flasks of opaque liquid)
-int detect2 = 10;
+int detect2 = 10; // Pin
 int sense2 = A2; //analog
  
 // Set 3 (for sword)
-int detect3 = 11;
+int detect3 = 11; // Pin
 int sense3 = A3; //analog
 
 // Relays
-int hiltRelay = 7;
-int swordRelay = 6;
+int hiltRelay = 7; //Pin
+int swordRelay = 6; //Pin
 
 // Reset button
-int resetButton = 5;
+int resetButton = 5; // Pin
 int buttonState;
 bool needsToBeReset = false;
 
 // speaker
-int speakerPin = 2;
+int speakerPin = 2; // Pin
 bool playing = false;
 
 // MUSIC
@@ -58,24 +58,25 @@ void playNote(char note, int duration) {
 
 void setup()
 {
+  // Relay configuration to output
   pinMode(hiltRelay, OUTPUT);
   pinMode(swordRelay, OUTPUT);
   // STOP RELAYS (to turn it on, use digitalWrite([name of relay], LOW);)
   digitalWrite(hiltRelay, LOW);
   digitalWrite(swordRelay, LOW);
-  // Set 0
+  // IR Set 0
   pinMode(detect0,OUTPUT);
   pinMode(sense0,INPUT);
   digitalWrite(detect0,HIGH);
-  // Set 1
+  // IR Set 1
   pinMode(detect1,OUTPUT);
   pinMode(sense1,INPUT);
   digitalWrite(detect1,HIGH);
-  // Set 2
+  // IR Set 2
   pinMode(detect2,OUTPUT);
   pinMode(sense2,INPUT);
   digitalWrite(detect2,HIGH);
-  // Set 3
+  // IR Set 3
   pinMode(detect3,OUTPUT);
   pinMode(sense3,INPUT);
   digitalWrite(detect3,HIGH);
@@ -108,6 +109,7 @@ void loop()
     Serial.println("1 and 2 and 3 (liquids done)");
     digitalWrite(hiltRelay, HIGH);
     needsToBeReset = true;
+   //Activates music when the hilt relay is activated
     if(playing == false){
       playing = true;
       music();
@@ -115,7 +117,7 @@ void loop()
   }
     
   else{
-    Serial.println("Nothing");
+    Serial.println("Nothing"); //Prints to serial monitor to test
   }
    //SWORD
   if(valueSet3 >=945){
@@ -125,10 +127,10 @@ void loop()
 
   }
   else{
-    Serial.println("Nothing");
+    Serial.println("Nothing"); //Prints to serial monitor to test
   }
 }
-
+//Music setup
 void music() {
   pinMode(speakerPin, OUTPUT);
   for (int i = 48; i < length; i++) {
